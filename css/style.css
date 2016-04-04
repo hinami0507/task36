@@ -6,13 +6,14 @@
 }
 
 #box {
-    width: 500px;
-    height: 500px;
+    width: 550px;
+    height: 550px;
     border: 2px solid #000;
-    margin: 50px auto 10px auto;
+    margin: 50px 0 10px 50px;
+    display: inline-block;
     position: relative;
-    left: 0;
-    top: 0;
+    float: left;
+
 }
 
 #box ul {
@@ -45,7 +46,6 @@
 
 .count.row li {
     width: 50px;
-    margin-right: -1px;
     float: left;
     height: 50px;
     text-align: center;
@@ -74,13 +74,21 @@
     border-top: 10px solid blue;
 }
 
+.wall{
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    background: #000;
+}
+
 #consoler {
-    width: 600px;
+    width: 800px;
     overflow: hidden;
     margin: 0px auto;
     text-align: center;
-    height: 150px;
-    padding-left: 340px;
+    height: 525px;
+    display: inline-block;
+    float: right;
 }
 #consoler ul{
     display: inline-block;
@@ -91,14 +99,15 @@
     vertical-align: top;
     position: relative;
 }
-.btn
+#btnGroup
 {
-    display: block;
+    margin-top: 10px;
+    display: inline-block;
     width: 700px;
-    margin: 0px auto;
     text-align: center;
+    float:right;
 }
-.btn>[type="button"]{
+#btnGroup>[type="button"]{
     display: inline-block;
     background: #4CCA3E;
     color: #fff;
@@ -107,7 +116,18 @@
     border: none;
     cursor: pointer;
 }
-.btn>label{
+#btnGroup>button{
+    margin: 10px 5px;
+    padding: 5px 15px;
+    background: #4CCA3E;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    width:100px;
+
+}
+
+#btnGroup>label{
     cursor: pointer;
 }
 #enableKey{
