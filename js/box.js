@@ -4,12 +4,14 @@ function rnd(n, m) {
 }
 
 var oBox = document.querySelector('#box'); //获取矩阵盒子
-var oUl = oBox.children[1];
+var wallGroup = document.querySelector('#wallGroup'); //获取墙的父元素
+var oUl = oBox.querySelector("ul");
 var txt = document.querySelector('#txt'); //获取输入框
 var start = document.querySelector('#start'); //获取start指令按钮
 var clearTxt = document.querySelector('#clearTxt'); //获取clear指令按钮
 var tip = document.querySelector('#tip'); //
 var enableKey = document.querySelector('#enableKey'); //是否允许方向键控制
+var quickInput = document.querySelector('#quickInput'); //是否允许方向键控制
 var btnGroup = document.querySelector('#btnGroup'); //是否允许方向键控制
 var c = 11; //矩阵行数 
 var cunit = 50;
@@ -50,7 +52,7 @@ function createbox() {
             }
             return flag;
         }
-    //运行
+        //运行
     this.go = function(x, y) {
         this.nowDir();
         if (this.checkGo(x, y)) {
@@ -110,63 +112,62 @@ function createbox() {
         }
         //通过指令输入输入移动
     this.terminal = function(sValue) {
-        switch (sValue) {
-            case 'GO':
-                this.go(this.xDir, this.yDir);
-                break;
-            case 'TRA LEF':
-                this.go(-1, 0);
-                break;
-            case 'TRA TOP':
-                this.go(0, -1);
-                break;
-            case 'TRA RIG':
-                this.go(1, 0);
-                break;
-            case 'TRA BOT':
-                this.go(0, 1);
-                break;
-            case 'MOV LEF':
-                this.rotate = -90;
-                this.go(-1, 0);
-                break;
-            case 'MOV TOP':
-                this.rotate = 0;
-                this.go(0, -1);
-                break;
-            case 'MOV RIG':
-                this.rotate = 90;
-                this.go(1, 0);
-                break;
-            case 'MOV BOT':
-                this.rotate = 180;
-                this.go(0, 1);
-                break;
+            switch (sValue) {
+                case 'GO':
+                    this.go(this.xDir, this.yDir);
+                    break;
+                case 'TRA LEF':
+                    this.go(-1, 0);
+                    break;
+                case 'TRA TOP':
+                    this.go(0, -1);
+                    break;
+                case 'TRA RIG':
+                    this.go(1, 0);
+                    break;
+                case 'TRA BOT':
+                    this.go(0, 1);
+                    break;
+                case 'MOV LEF':
+                    this.rotate = -90;
+                    this.go(-1, 0);
+                    break;
+                case 'MOV TOP':
+                    this.rotate = 0;
+                    this.go(0, -1);
+                    break;
+                case 'MOV RIG':
+                    this.rotate = 90;
+                    this.go(1, 0);
+                    break;
+                case 'MOV BOT':
+                    this.rotate = 180;
+                    this.go(0, 1);
+                    break;
 
+            }
+            this.nowDir();
         }
-        this.nowDir();
-    }
-    //修墙
+        //修墙
     this.build = function() {
-        var wallX = this.x + this.xDir;
-        var wallY = this.y + this.yDir;
-        if (allowBuild(wallX, wallY)) {
-            createWall(wallX,wallY)
+            var wallX = this.x + this.xDir;
+            var wallY = this.y + this.yDir;
+            if (allowBuild(wallX, wallY)) {
+                createWall(wallX, wallY)
+            }
         }
-    }
-    //刷墙
-    this.BruColor = function(wallColor){
-        var wallX = this.x + this.xDir;
-        var wallY = this.y + this.yDir;
-        var wallId = findWall(wallX,wallY);
-        if(!isNaN(wallId))
-        {
-            var str = "#wall-"+wallId;
-            var theWall =document.querySelector(str)
-            theWall.style.backgroundColor = wallColor;
+        //刷墙
+    this.BruColor = function(wallColor) {
+            var wallX = this.x + this.xDir;
+            var wallY = this.y + this.yDir;
+            var wallId = findWall(wallX, wallY);
+            if (!isNaN(wallId)) {
+                var str = "#wall-" + wallId;
+                var theWall = document.querySelector(str)
+                theWall.style.backgroundColor = wallColor;
+            }
         }
-    }
-    //初始化
+        //初始化
     this.init = function() {
         this.nowDir();
         oBlock.style.WebkitTransform = 'rotate(' + this.rotate + 'deg)';
@@ -267,7 +268,7 @@ clearTxt.addEventListener("click", function() {
 })
 
 //右边快捷输入字符
-btnGroup.addEventListener("click", function(event) {
+quickInput.addEventListener("click", function(event) {
     if (event.target.nodeName == "BUTTON")
         txt.value += event.target.innerHTML + " ";
     txt.focus();
@@ -294,7 +295,7 @@ function allowBuild(x, y) {
     return flag;
 }
 //输入坐标找墙
-function findWall(x,y){
+function findWall(x, y) {
     var i = walls.x.length;
     while (i--) {
         if (walls.x[i] == x && walls.y[i] == y) {
@@ -313,13 +314,13 @@ function ranBuild() {
             var x = rnd(0, c);
             var y = rnd(0, r);
         }
-        createWall(x,y);
+        createWall(x, y);
     }
 
 }
 
 //创造墙
-function createWall(x,y) {
+function createWall(x, y) {
     walls.x.push(x);
     walls.y.push(y);
     walls.color.push("green");
@@ -327,15 +328,21 @@ function createWall(x,y) {
     oBlock.className = 'wall';
     var len = walls.x.length;
     var last = len - 1;
-    oBlock.id="wall-"+last;
+    oBlock.id = "wall-" + last;
     oBlock.style.left = walls.x[last] * cunit + 'px';
     oBlock.style.top = walls.y[last] * runit + 'px';
     oBlock.style.backgroundColor = walls.color[last];
-    oBox.appendChild(oBlock);
+    wallGroup.appendChild(oBlock);
 }
 
-
+//刷墙按钮
 var bruColor = document.querySelector("#bruColor");
-subColor.addEventListener("click",function(){
+subColor.addEventListener("click", function() {
     box1.BruColor(bruColor.value);
+})
+//清除墙按钮
+var clearWalls = document.querySelector("#clearWalls");
+clearWalls.addEventListener("click", function() {
+    wallGroup.innerHTML = "";
+    walls = { "x": [], "y": [], "color": [] };
 })

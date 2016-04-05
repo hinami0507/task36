@@ -9,6 +9,7 @@
 
 <body>
     <div id="box">
+        <div id="wallGroup"></div>
         <ol class="count row">
             <li>0</li>
             <li>1</li>
@@ -38,15 +39,18 @@
         </ol>
     </div>
     <div id="btnGroup">
-        <input type="button" value="START" id="start"  />
-        <input type="button" value="clear" id="clearTxt" />
-        
         <input type="text" value="red" id="bruColor" />
-        <input type="button" value="刷墙" id="subColor"  />
-        <label>是否允许方向键控制<input type="checkbox" checked="checked"  id="enableKey" /></label>
-        <input type="button" value="ranBuild" onclick="ranBuild()" />
         <input type="button" value="build" onclick="box1.build()" />
+        <input type="button" value="ranBuild" onclick="ranBuild()" />
+        <input type="button" value="刷墙" id="subColor"  />
+        <input type="button" value="清除墙" id="clearWalls"  />
         <br/>
+        <input type="button" value="START" id="start"  />
+        <input type="button" value="clearTxt" id="clearTxt" />
+        <label>是否允许方向键控制<input type="checkbox" checked="checked"  id="enableKey" /></label>
+        <br/>
+        </div>
+    <div id="quickInput">
         <button>TRA LEF</button>
         <button>TRA TOP</button>
         <button>TRA RIG</button>

@@ -99,7 +99,7 @@
     vertical-align: top;
     position: relative;
 }
-#btnGroup
+#btnGroup,#quickInput
 {
     margin-top: 10px;
     display: inline-block;
@@ -107,6 +107,7 @@
     text-align: center;
     float:right;
 }
+
 #btnGroup>[type="button"]{
     display: inline-block;
     background: #4CCA3E;
@@ -115,8 +116,9 @@
     padding: 10px 30px;
     border: none;
     cursor: pointer;
+    margin: 10px 2px;
 }
-#btnGroup>button{
+#quickInput>button{
     margin: 10px 5px;
     padding: 5px 15px;
     background: #4CCA3E;
@@ -186,4 +188,8 @@
 #LineNum > *:before {
   counter-increment: item;
   content: counter(item);
+}
+
+#wallGroup{
+    position: absolute;
 }
