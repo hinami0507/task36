@@ -1,7 +1,9 @@
 # task36
 小方块4
-将所有模块封装了---[Demo](http://htmlpreview.github.io/?https://github.com/hinami0507/task36/blob/master/index.html)
-主要有三大类createbox() ,shell{} ,wall{}
+[Demo](http://htmlpreview.github.io/?https://github.com/hinami0507/task36/blob/master/index.html)
+将所有模块封装了---主要有三大类createbox() ,shell{} ,wall{}
+
+
 
 
 ## 工厂模式----创建小方块createbox()
