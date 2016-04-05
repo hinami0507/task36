@@ -1,0 +1,1 @@
+console.log(box1.x,box1.y);

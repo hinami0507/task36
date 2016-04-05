@@ -23,7 +23,6 @@ for (var i = 0; i < c * r; i++) {
 }
 
 
-
 /*
 工厂模式----创建小方块createbox()
 checkGo(x,y),   当前坐标加上(x,y)向量，判断该移动是否合法，合法：返回1;  不合法：返回0;
@@ -84,6 +83,8 @@ function createbox() {
             if (this.xDir == 0 && this.yDir == 1) //下
                 rot = 180;
             oBlock.style.WebkitTransform = 'rotate(' + rot + 'deg)';
+            oBlock.style.MsTransform = 'rotate(' + rot + 'deg)';
+            oBlock.style.Transform = 'rotate(' + rot + 'deg)';
         }
         //按键移动
     this.keyDrive = function(key) {
@@ -267,16 +268,17 @@ var shell = {
         this.checkClock = setTimeout(function() {
             shell.check();
         }, 1000);
+        this.check();
     },
     //获取并且切分指令
-    getCmd: function(cmdStr) {
-        this.cmdArr = cmdStr.split(/\n/);
+    getCmd: function() {
+        this.cmdArr = txt.value.split(/\n/);
     }
 }
 
 //输入的时候更新指令，
 txt.addEventListener('input', function() {
-    shell.getCmd(this.value);
+    shell.getCmd();
     shell.synLinNum();
 });
 
@@ -290,7 +292,7 @@ txt.addEventListener('blur', function() {
 });
 //点击提交指令
 start.addEventListener("click", function() {
-    shell.getCmd(txt.value);
+    shell.getCmd();
     shell.submit();
 });
 
@@ -405,8 +407,8 @@ clearTxt.addEventListener("click", function() {
 quickInput.addEventListener("click", function(event) {
     if (event.target.nodeName == "BUTTON") {
         txt.value += event.target.innerHTML;
-        if (event.target.innerHTML != "Build")
-            txt.value += " ";
     }
     txt.focus();
+    shell.getCmd();
+    shell.check();
 })
