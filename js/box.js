@@ -11,20 +11,22 @@ var start = document.querySelector('#start'); //获取start指令按钮
 var clearTxt = document.querySelector('#clearTxt'); //获取clear指令按钮
 var tip = document.querySelector('#tip'); //
 var enableKey = document.querySelector('#enableKey'); //是否允许方向键控制
-var quickInput = document.querySelector('#quickInput'); //是否允许方向键控制
-var btnGroup = document.querySelector('#btnGroup'); //是否允许方向键控制
+var quickInput = document.querySelector('#quickInput'); //点击button来快速添加字符
+var btnGroup = document.querySelector('#btnGroup'); // 修墙之类的主功能键
 var c = 11; //矩阵行数 
 var cunit = 50;
 var r = 11; //矩阵列数
 var runit = 50;
-//画矩阵
+//画矩阵，坐标系的x轴向右,y轴向下
 for (var i = 0; i < c * r; i++) {
     var oLi = document.createElement('li');
     oUl.appendChild(oLi);
 }
 
-// 这里的x轴向右,y轴向下
-// 画小方块
+
+//工厂模式----创建小方块createbox()
+//
+
 function createbox() {
     this.cunit = 50; //横坐标单位
     this.vunit = 50; //纵坐标单位
@@ -44,9 +46,9 @@ function createbox() {
             //校验是否超出边界
             if (nexty < 0 || nexty > (c - 1) || nextx < 0 || nextx > (r - 1)) { flag = 0; }
             //校验是否碰墙了
-            var i = walls.x.length;
+            var i = wall.list.x.length;
             while (i--) {
-                if (nextx == walls.x[i] && nexty == walls.y[i])
+                if (nextx == wall.list.x[i] && nexty == wall.list.y[i])
                     flag = 0;
             }
             return flag;
@@ -61,42 +63,42 @@ function createbox() {
         }
     };
     //控制转向功能
-    this.rot =function(xd,yd){
-        var rot=0;
-        if(!isNaN(xd))this.xDir=xd;
-        if(!isNaN(yd))this.yDir=yd;
-        if(this.xDir == -1 && this.yDir == 0)//左
-            rot=-90;
-        if(this.xDir == 0 && this.yDir == -1)//上
-            rot=0;
-        if(this.xDir == 1 && this.yDir == 0)//右
-            rot=90;
-        if(this.xDir == 0 && this.yDir == 1)//下
-            rot=180;
-        oBlock.style.WebkitTransform = 'rotate(' + rot + 'deg)';
-    }
-    //按键移动
+    this.rot = function(xd, yd) {
+            var rot = 0;
+            if (!isNaN(xd)) this.xDir = xd;
+            if (!isNaN(yd)) this.yDir = yd;
+            if (this.xDir == -1 && this.yDir == 0) //左
+                rot = -90;
+            if (this.xDir == 0 && this.yDir == -1) //上
+                rot = 0;
+            if (this.xDir == 1 && this.yDir == 0) //右
+                rot = 90;
+            if (this.xDir == 0 && this.yDir == 1) //下
+                rot = 180;
+            oBlock.style.WebkitTransform = 'rotate(' + rot + 'deg)';
+        }
+        //按键移动
     this.keyDrive = function(key) {
         switch (key) { //左上右下
             case 37:
                 if (this.xDir == -1 && this.yDir == 0)
                     this.go(-1, 0);
-                this.rot(-1,0);
+                this.rot(-1, 0);
                 break;
             case 38:
                 if (this.xDir == 0 && this.yDir == -1)
                     this.go(0, -1);
-                this.rot(0,-1);
+                this.rot(0, -1);
                 break;
             case 39:
                 if (this.xDir == 1 && this.yDir == 0)
                     this.go(1, 0);
-                this.rot(1,0);
+                this.rot(1, 0);
                 break;
             case 40:
                 if (this.xDir == 0 && this.yDir == 1)
                     this.go(0, 1);
-                this.rot(0,1);
+                this.rot(0, 1);
                 break;
         }
     };
@@ -134,25 +136,41 @@ function createbox() {
                     this.rot(0, 1);
                     this.go(0, 1);
                     break;
+                case 'BUILD':
+                    this.build();
+                    break;
             }
         }
         //修墙
     this.build = function() {
             var wallX = this.x + this.xDir;
             var wallY = this.y + this.yDir;
-            if (allowBuild(wallX, wallY)) {
-                createWall(wallX, wallY)
+            switch (wall.allowBuild(wallX, wallY)) {
+                case 1: //表示可以修墙
+                    wall.createWall(wallX, wallY);
+                    break;
+                case 2: //表示超过边界了
+                    console.log("坐标：(" + wallX + "." + wallY + ")这个地方已经超出边界了，你造个锤子");
+                    break;
+                case 3: //表示该地已经有墙了
+                    console.log("坐标：(" + wallX + "." + wallY + ")这个地方已经有墙了，你造个锤子");
+                    break;
+                default:
+                    console.log("未知错误");
+                    break;
             }
         }
         //刷墙
     this.BruColor = function(wallColor) {
             var wallX = this.x + this.xDir;
             var wallY = this.y + this.yDir;
-            var wallId = findWall(wallX, wallY);
+            var wallId = wall.find(wallX, wallY);
             if (!isNaN(wallId)) {
                 var str = "#wall-" + wallId;
                 var theWall = document.querySelector(str)
                 theWall.style.backgroundColor = wallColor;
+            } else {
+                console.log("坐标：(" + wallX + "." + wallY + ")没有墙Σ( ° △ °|||)︴，你刷个锤子");
             }
         }
         //初始化
@@ -174,6 +192,7 @@ window.addEventListener("keydown", function(event) {
         box1.keyDrive(event.keyCode);
 })
 
+//
 var consoler_error_handler;
 var consoler = document.querySelector("#consoler");
 var LineNum = document.querySelector("#LineNum"); //行号
@@ -200,7 +219,7 @@ txt.addEventListener('input', function() {
         //保存指令
         consoler.dataset.cmd = JSON.stringify(arr);
     })
-    //通过滚动调整行号
+//通过滚动调整行号
 LineNum.appendChild(iNode.cloneNode(false))
 txt.addEventListener('scroll', function() {
     LineNum.style.top = -txt.scrollTop + 'px';
@@ -247,6 +266,8 @@ start.addEventListener("click", function() {
             alert('指令格式错误，不要输入一些奇奇怪怪的东西凸(艹皿艹 )');
         }
     })
+
+
 //清除输入宽内容
 clearTxt.addEventListener("click", function() {
     txt.value = "";
@@ -262,73 +283,72 @@ quickInput.addEventListener("click", function(event) {
 })
 
 
-var walls = {
-    "x": [],
-    "y": [],
-    "color": []
-}
-
-//输入坐标判断是否允许放墙
-function allowBuild(x, y) {
-    var flag = 1; //flag==1表示该地方允许造墙
-    var i = walls.x.length;
-    if (y < 0 || y > (c - 1) || x < 0 || x > (r - 1)) { flag = 0; }
-    //检测生成的墙的位置是否已经有墙或者有小方块
-    while (i--) {
-        if ((walls.x[i] == x && walls.y[i] == y) || (box1.x == x && box1.y == y)) {
-            flag = 0;
+//墙对象----wall
+//list 保存所有墙的xy坐标和颜色
+//allowBuild(x,y)：坐标(x,y)是否允许造墙，返回1：可以造墙；返回2：超过边界;返回3：已经有墙；
+//find(x,y)：坐标(x,y)是否有墙,若有返回墙Id
+//ranBuild()：随机造墙
+//createWall(x,y)：在坐标(x,y)造墙，并且存入list中
+var wall = {
+    list: { "x": [], "y": [], "color": [] },
+    allowBuild: function(x, y) {
+        var i = this.list.x.length;
+        if (y < 0 || y > (c - 1) || x < 0 || x > (r - 1)) {
+            return 2; //返回2表示超过边界了
         }
-    }
-    return flag;
-}
-//输入坐标找墙
-function findWall(x, y) {
-    var i = walls.x.length;
-    while (i--) {
-        if (walls.x[i] == x && walls.y[i] == y) {
-            return i;
+        //检测生成的墙的位置是否已经有墙或者有小方块
+        while (i--) {
+            if ((this.list.x[i] == x && this.list.y[i] == y) || (box1.x == x && box1.y == y)) {
+                return 3; //返回3表示已经有墙了
+            }
         }
-    }
-}
-//随机生成墙
-function ranBuild() {
-    ////检测地图里是否满了，没有位置放墙了
-    if (c * r - 2 >= walls.x.length) {
-        var x = rnd(0, c);
-        var y = rnd(0, r);
-        //检测是否重复或者是box1的坐标，重新随机x，y轴坐标
-        while (!allowBuild(x, y)) {
+        return 1; //返回1表示可以造墙
+    },
+    find: function(x, y) {
+        var i = this.list.x.length;
+        while (i--) {
+            if (this.list.x[i] == x && this.list.y[i] == y) {
+                return i;
+            }
+        }
+    },
+    ranBuild: function() {
+        if (c * r - 2 >= this.list.x.length) {
             var x = rnd(0, c);
             var y = rnd(0, r);
+            //检测是否重复或者是box1的坐标，重新随机x，y轴坐标
+            while (this.allowBuild(x, y) != 1) {
+                var x = rnd(0, c);
+                var y = rnd(0, r);
+            }
+            this.createWall(x, y);
         }
-        createWall(x, y);
+    },
+    createWall: function(x, y) {
+        this.list.x.push(x);
+        this.list.y.push(y);
+        this.list.color.push("green");
+        var oBlock = document.createElement('span');
+        oBlock.className = 'wall';
+        var len = this.list.x.length;
+        var last = len - 1;
+        oBlock.id = "wall-" + last;
+        oBlock.style.left = this.list.x[last] * cunit + 'px';
+        oBlock.style.top = this.list.y[last] * runit + 'px';
+        oBlock.style.backgroundColor = this.list.color[last];
+        wallGroup.appendChild(oBlock);
     }
 }
 
-//创造墙
-function createWall(x, y) {
-    walls.x.push(x);
-    walls.y.push(y);
-    walls.color.push("green");
-    var oBlock = document.createElement('span');
-    oBlock.className = 'wall';
-    var len = walls.x.length;
-    var last = len - 1;
-    oBlock.id = "wall-" + last;
-    oBlock.style.left = walls.x[last] * cunit + 'px';
-    oBlock.style.top = walls.y[last] * runit + 'px';
-    oBlock.style.backgroundColor = walls.color[last];
-    wallGroup.appendChild(oBlock);
-}
 
 //刷墙按钮
 var bruColor = document.querySelector("#bruColor");
 subColor.addEventListener("click", function() {
-    box1.BruColor(bruColor.value);
-})
+        box1.BruColor(bruColor.value);
+    })
 //清除墙按钮
 var clearWalls = document.querySelector("#clearWalls");
 clearWalls.addEventListener("click", function() {
     wallGroup.innerHTML = "";
-    walls = { "x": [], "y": [], "color": [] };
+    wall.list = { "x": [], "y": [], "color": [] };
 })
