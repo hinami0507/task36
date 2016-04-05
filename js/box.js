@@ -22,15 +22,19 @@ for (var i = 0; i < c * r; i++) {
     oUl.appendChild(oLi);
 }
 
-//工厂模式----创建小方块createbox()
-//checkGo(x,y),   当前坐标加上(x,y)向量，判断该移动是否合法，合法：返回1;  不合法：返回0;
-//go(x,y),        当前坐标加上(x,y)向量进行移动。
-//rotate(xd,yd)   xd=-1向左;xd=1向右;xd=1向下;xd=-1向上;为0表示不朝向
-//keyDrive(key)   通过键盘控制方块移动，key的值对应：37左，38上，39右，40下；
-//terminal(sValue)  通过输入的sValue做出移动和转向判断
-//build()         根据当前坐标，车头方向---在车头方向造墙，依赖wall.allowBuild(wallX, wallY)
-//BruColor(wallColor) 将车头的墙改变颜色为wallColor;
-//init()         初始化,确定小方块坐标和车头方向；
+
+
+/*
+工厂模式----创建小方块createbox()
+checkGo(x,y),   当前坐标加上(x,y)向量，判断该移动是否合法，合法：返回1;  不合法：返回0;
+go(x,y),        当前坐标加上(x,y)向量进行移动。
+rotate(xd,yd)   xd=-1向左;xd=1向右;xd=1向下;xd=-1向上;为0表示不朝向
+keyDrive(key)   通过键盘控制方块移动，key的值对应：37左，38上，39右，40下；
+terminal(sValue)  通过输入的sValue做出移动和转向判断
+build()         根据当前坐标，车头方向---在车头方向造墙，依赖wall.allowBuild(wallX, wallY)
+BruColor(wallColor) 将车头的墙改变颜色为wallColor;
+init()         初始化,确定小方块坐标和车头方向；
+*/
 function createbox() {
     this.cunit = 50; //横坐标单位
     this.vunit = 50; //纵坐标单位
@@ -203,7 +207,7 @@ synLinNum() //更新行号，并且隔1秒验证一次
 getCmd() //获取指令并且切分
 */
 var shell = {
-    row: 1,  //当前行数
+    row: 1, //当前行数
     reg: /^go \d{1,2}|mov (rig|top|lef|bot) \d{1,2}|tra (rig|top|lef|bot) \d{1,2}|build$/i, //校验的正则表达式
     errorList: [],
     cmdArr: [],
@@ -236,7 +240,7 @@ var shell = {
                 var action = item.split(/ \d/)[0]; //取得指令方法
                 action = action.toUpperCase(); //全部转化为大写
                 var acTime = item.replace(/[^0-9]+/g, '') - 0; //取得指令的次数
-                if(acTime==0) acTime=1; //如果不输入次数默认为1
+                if (acTime == 0) acTime = 1; //如果不输入次数默认为1
                 var ac = 0;
                 while (ac < acTime) {
                     ac++;
@@ -265,7 +269,7 @@ var shell = {
         }, 1000);
     },
     //获取并且切分指令
-    getCmd:function(cmdStr){
+    getCmd: function(cmdStr) {
         this.cmdArr = cmdStr.split(/\n/);
     }
 }
@@ -293,12 +297,14 @@ start.addEventListener("click", function() {
 
 
 
-//墙对象----wall
-//list 保存所有墙的xy坐标和颜色
-//allowBuild(x,y)：坐标(x,y)是否允许造墙，返回1：可以造墙；返回2：超过边界;返回3：已经有墙；
-//find(x,y)：坐标(x,y)是否有墙,若有返回墙Id
-//ranBuild()：随机造墙
-//createWall(x,y)：在坐标(x,y)造墙，并且存入list中
+/*
+墙对象----wall
+list 保存所有墙的xy坐标和颜色
+allowBuild(x,y)：坐标(x,y)是否允许造墙，返回1：可以造墙；返回2：超过边界;返回3：已经有墙；
+find(x,y)：坐标(x,y)是否有墙,若有返回墙Id
+ranBuild()：随机造墙
+createWall(x,y)：在坐标(x,y)造墙，并且存入list中
+*/
 var wall = {
         list: {
             "x": [],
@@ -347,13 +353,19 @@ var wall = {
             var len = this.list.x.length;
             var last = len - 1;
             oBlock.id = "wall-" + last;
+
             oBlock.style.left = this.list.x[last] * cunit + 'px';
             oBlock.style.top = this.list.y[last] * runit + 'px';
             oBlock.style.backgroundColor = this.list.color[last];
             wallGroup.appendChild(oBlock);
+            oBlock.style.opacity = 0;
+
+            setTimeout(function() { 
+                oBlock.style.opacity = 1; 
+            }, 200);
         }
     }
-//===================================================================
+    //===================================================================
 
 
 
@@ -364,11 +376,16 @@ var bruColor = document.querySelector("#bruColor");
 subColor.addEventListener("click", function() {
         box1.BruColor(bruColor.value);
     })
-//清除墙按钮
+    //清除墙按钮
 var clearWalls = document.querySelector("#clearWalls");
 clearWalls.addEventListener("click", function() {
-    wallGroup.innerHTML = "";
-    wall.list = { "x": [], "y": [], "color": [] };
+    wallGroup.style.opacity = 0;
+    setTimeout(function() {
+        wallGroup.innerHTML = "";
+        wall.list = { "x": [], "y": [], "color": [] };
+        wallGroup.style.opacity = 1;
+    }, 1000);
+
 })
 
 //通过按键来控制小方块
@@ -386,11 +403,10 @@ clearTxt.addEventListener("click", function() {
 
 //右边快捷输入字符
 quickInput.addEventListener("click", function(event) {
-    if (event.target.nodeName == "BUTTON")
-    {
+    if (event.target.nodeName == "BUTTON") {
         txt.value += event.target.innerHTML;
-        if(event.target.innerHTML!="Build")
-        txt.value += " ";
+        if (event.target.innerHTML != "Build")
+            txt.value += " ";
     }
     txt.focus();
 })

@@ -79,6 +79,8 @@
     height: 50px;
     position: absolute;
     background: #000;
+    transition: -webkit-transform 1s,background 2s,opacity 1s;
+    -webkit-transition: -webkit-transform 1s,background 2s,opacity 1s; /* Safari */
 }
 
 #consoler {
@@ -154,8 +156,8 @@
     font-weight: bold;
 }
 #car{
-    transition: left 1s,right 1s,top 1s,bottom 1s,-webkit-transform 1s;
-    -webkit-transition: left 1s,right 1s,top 1s,bottom 1s,-webkit-transform 1s; /* Safari */
+    transition: left 1s,right 1s,top 1s,bottom 1s,-webkit-transform 1s,background 2s;
+    -webkit-transition: left 1s,right 1s,top 1s,bottom 1s,-webkit-transform 1s,background 2s; /* Safari */
 }
 
 #tip{
@@ -195,4 +197,7 @@
 
 #wallGroup{
     position: absolute;
+    opacity:1;
+    transition: -webkit-transform 1s,opacity 1s;
+    -webkit-transition: -webkit-transform 1s,opacity 1s; /* Safari */
 }
