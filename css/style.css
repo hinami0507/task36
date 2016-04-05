@@ -112,16 +112,19 @@
     display: inline-block;
     background: #4CCA3E;
     color: #fff;
-    width:100px;
+    width:120px;
     padding: 10px 30px;
     border: none;
     cursor: pointer;
     margin: 10px 2px;
 }
+#btnGroup>[type="text"]{
+    padding: 8px 11px;
+}
 #quickInput>button{
     margin: 10px 5px;
     padding: 5px 15px;
-    background: #4CCA3E;
+    background: #6598D3;
     color: #fff;
     border: none;
     cursor: pointer;
