@@ -30,7 +30,6 @@ function createbox() {
     this.vunit = 50; //纵坐标单位
     this.x = rnd(0, c); //小方块的x轴坐标
     this.y = rnd(0, r); //小方块的y轴坐标
-    this.rotate = 0; //车头方向
     this.xDir = 0; //小方块水平方向
     this.yDir = 0; //小方块竖直方向
     var oBlock = document.createElement('span');
@@ -52,65 +51,56 @@ function createbox() {
             }
             return flag;
         }
-        //运行
+    //运行
     this.go = function(x, y) {
-        this.nowDir();
         if (this.checkGo(x, y)) {
             this.x += x;
             this.y += y;
-            oBlock.style.WebkitTransform = 'rotate(' + this.rotate + 'deg)';
             oBlock.style.left = this.cunit * this.x + 'px';
             oBlock.style.top = this.vunit * this.y + 'px';
         }
     };
+    //控制转向功能
+    this.rot =function(xd,yd){
+        var rot=0;
+        if(!isNaN(xd))this.xDir=xd;
+        if(!isNaN(yd))this.yDir=yd;
+        if(this.xDir == -1 && this.yDir == 0)//左
+            rot=-90;
+        if(this.xDir == 0 && this.yDir == -1)//上
+            rot=0;
+        if(this.xDir == 1 && this.yDir == 0)//右
+            rot=90;
+        if(this.xDir == 0 && this.yDir == 1)//下
+            rot=180;
+        oBlock.style.WebkitTransform = 'rotate(' + rot + 'deg)';
+    }
     //按键移动
     this.keyDrive = function(key) {
-        this.nowDir();
         switch (key) { //左上右下
             case 37:
-                this.rotate = -90;
                 if (this.xDir == -1 && this.yDir == 0)
                     this.go(-1, 0);
+                this.rot(-1,0);
                 break;
             case 38:
-                this.rotate = 0;
                 if (this.xDir == 0 && this.yDir == -1)
                     this.go(0, -1);
+                this.rot(0,-1);
                 break;
             case 39:
-                this.rotate = 90;
                 if (this.xDir == 1 && this.yDir == 0)
                     this.go(1, 0);
+                this.rot(1,0);
                 break;
             case 40:
-                this.rotate = 180;
                 if (this.xDir == 0 && this.yDir == 1)
                     this.go(0, 1);
+                this.rot(0,1);
                 break;
         }
-        this.nowDir();
-        oBlock.style.WebkitTransform = 'rotate(' + this.rotate + 'deg)';
     };
-    //判断小方块当前方向
-    this.nowDir = function() {
-            var dir = Math.abs((this.rotate / 90) % 4);
-            var flag = ((this.rotate / 90) % 4) / dir; //判断左右，-1为左，1为右
-            switch (dir) {
-                case 1: //左flag=-1和右flag=1
-                    this.xDir = flag;
-                    this.yDir = 0;
-                    break;
-                case 2: //下
-                    this.yDir = 1;
-                    this.xDir = 0;
-                    break;
-                case 0: //上
-                    this.yDir = -1;
-                    this.xDir = 0;
-                    break;
-            }
-        }
-        //通过指令输入输入移动
+    //通过指令输入输入移动
     this.terminal = function(sValue) {
             switch (sValue) {
                 case 'GO':
@@ -129,24 +119,22 @@ function createbox() {
                     this.go(0, 1);
                     break;
                 case 'MOV LEF':
-                    this.rotate = -90;
+                    this.rot(-1, 0);
                     this.go(-1, 0);
                     break;
                 case 'MOV TOP':
-                    this.rotate = 0;
+                    this.rot(0, -1);
                     this.go(0, -1);
                     break;
                 case 'MOV RIG':
-                    this.rotate = 90;
+                    this.rot(1, 0);
                     this.go(1, 0);
                     break;
                 case 'MOV BOT':
-                    this.rotate = 180;
+                    this.rot(0, 1);
                     this.go(0, 1);
                     break;
-
             }
-            this.nowDir();
         }
         //修墙
     this.build = function() {
@@ -169,8 +157,7 @@ function createbox() {
         }
         //初始化
     this.init = function() {
-        this.nowDir();
-        oBlock.style.WebkitTransform = 'rotate(' + this.rotate + 'deg)';
+        oBlock.style.WebkitTransform = 'rotate(0deg)';
         oBlock.style.left = this.cunit * this.x + 'px';
         oBlock.style.top = this.vunit * this.y + 'px';
     }
@@ -260,7 +247,7 @@ start.addEventListener("click", function() {
             alert('指令格式错误，不要输入一些奇奇怪怪的东西凸(艹皿艹 )');
         }
     })
-    //清除输入宽内容
+//清除输入宽内容
 clearTxt.addEventListener("click", function() {
     txt.value = "";
     row = 1;
@@ -316,7 +303,6 @@ function ranBuild() {
         }
         createWall(x, y);
     }
-
 }
 
 //创造墙
